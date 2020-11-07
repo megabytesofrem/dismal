@@ -63,22 +63,6 @@ private
         infoLog("sending heartbeat to discord gateway..");
     }
 
-    string convertOpcode(int op) {
-        switch (op) {
-            case GatewayOpcodes.hello: return "hello";
-            case GatewayOpcodes.dispatch: return "dispatch";
-            case GatewayOpcodes.identify: return "identify";
-            case GatewayOpcodes.heartbeat: return "heartbeat";
-            case GatewayOpcodes.heartbeatAck: return "heartbeat ack";
-            case GatewayOpcodes.reconnect: return "reconnect";
-            case GatewayOpcodes.requestGuildMembers: return "req guild members";
-            case GatewayOpcodes.resume: return "resume";
-            case GatewayOpcodes.statusUpdate: return "status update";
-            case GatewayOpcodes.invalidSession: return "invalid session";
-            default: return "not supported";
-        }
-    }
-
     void decodePacket(string json) {
         int opcode;
         Json jsonData;
