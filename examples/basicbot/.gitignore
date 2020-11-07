@@ -1,0 +1,15 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/basicbot
+basicbot.so
+basicbot.dylib
+basicbot.dll
+basicbot.a
+basicbot.lib
+basicbot-test-*
+*.exe
+*.o
+*.obj
+*.lst

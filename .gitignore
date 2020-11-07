@@ -1,0 +1,19 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/decor
+decor.so
+decor.dylib
+decor.dll
+decor.a
+decor.lib
+decor-test-*
+*.exe
+*.o
+*.obj
+*.lst
+
+# Exclude app.d and bot.d since these are local tests
+app.d
+bot.d
