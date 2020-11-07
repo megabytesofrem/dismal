@@ -15,5 +15,7 @@ decor-test-*
 *.lst
 
 # Exclude app.d and bot.d since these are local tests
-app.d
-bot.d
+source/app.d
+source/bot.d
+!/examples/basicbot/source/app.d
+!/examples/basicbot/source/bot.d

@@ -11,3 +11,5 @@ Work in progress Discord API wrapper for D lang.
 ## Basic Example
 A basic example for creating a bot using dcord can be found under `examples/basicbot/source`. Please note that you will need to edit
 the `token` variable and provide your own bot token.
+
+If you wish to test it, run `./test.sh` to copy the library files and run the example bot
