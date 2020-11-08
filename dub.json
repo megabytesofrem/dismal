@@ -11,5 +11,5 @@
 	},
 	"description": "Work in progress Discord API wrapper for D lang",
 	"license": "MIT",
-	"name": "dcord"
+	"name": "cord"
 }

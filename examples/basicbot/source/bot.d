@@ -2,12 +2,12 @@ module bot;
 
 import std.string;
 
-// decor imports
-import dcord.client;
-import dcord.logging.logger;
-import dcord.models;
+// cord imports
+import cord.client;
+import cord.logging.logger;
+import cord.models;
 
-import dcord.util.embed;
+import cord.util.embed;
 
 class MyClient : Client
 {
