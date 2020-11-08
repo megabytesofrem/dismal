@@ -1,4 +1,4 @@
-# dcord
+# cord
 Work in progress Discord API wrapper for D lang.
 
 ## Features
