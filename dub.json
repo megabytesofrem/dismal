@@ -9,7 +9,7 @@
 		"requests:vibed": "~>2",
 		"vibe-d": "~>0.9.2"
 	},
-	"description": "Work in progress Discord API wrapper for D lang",
+	"description": "dismal: The small wip discord api for D",
 	"license": "MIT",
-	"name": "cord"
+	"name": "dismal"
 }
