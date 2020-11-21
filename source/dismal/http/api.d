@@ -1,5 +1,9 @@
 module dismal.http.api;
 
+import std.typecons : Nullable;
+import std.range : front;
+import std.algorithm.searching;
+
 import vibe.core.core;
 import vibe.http.client;
 import vibe.data.json;
@@ -7,7 +11,7 @@ import vibe.data.json;
 import dismal.http.client;
 
 /**
-    Abstraction over the Discord /channels/ endpoint
+ * Abstraction over the Discord /channels/ endpoint
 **/
 class ChannelAPI
 {
@@ -86,6 +90,12 @@ public:
         return requestDiscordAs!(Channel[])(HTTPMethod.GET, "/guilds/"~guildId~"/channels", "json", this._token);
     }
 
+    Channel getGuildChannel(string guildId, string channelId) {
+        auto channels = getGuildChannels(guildId);
+        Channel chan = channels.find!((c) => c.id == channelId).front;
+        return chan;
+    }
+
     GuildMember[] getGuildMembers(string guildId) {
         return requestDiscordAs!(GuildMember[])(HTTPMethod.GET, "/guilds/"~guildId~"/members", "json", this._token);
     }
@@ -95,6 +105,18 @@ public:
     }
 
     Role[] getGuildRoles(string guildId) {
-        return requestDiscordAs!(Role[])(HTTPMethod.GET, "/guilds/"~guildId~"/roles/", "json", this._token);
+        return requestDiscordAs!(Role[])(HTTPMethod.GET, "/guilds/"~guildId~"/roles", "json", this._token);
+    }
+
+    Nullable!Role getGuildRole(string guildId, string roleId) {
+        import std.stdio : writefln;
+
+        auto roles = getGuildRoles(guildId);
+        foreach (role; roles) {
+            writefln("role id: %s, name: %s", role.id, role.name);
+        }
+
+        Role role = roles.find!((r) => r.id == roleId).front;
+        return Nullable!Role(role);
     }
 }

@@ -8,25 +8,43 @@ import dismal.models;
 class EmbedBuilder 
 {
 private:
-    static Embed _embed;
+    static Embed singleton;
 
 public:
     static EmbedBuilder withTitle(string title) {
-        this._embed.title = title;
+        this.singleton.title = title;
         return new EmbedBuilder();
     }
 
     static EmbedBuilder withDescription(string description) {
-        this._embed.description = description;
+        this.singleton.description = description;
+        return new EmbedBuilder();
+    }
+
+    static EmbedBuilder withFooter(string text, string url = "") {
+        this.singleton.footer.text = text;
+
+        if (url != "")
+            this.singleton.footer.icon_url = url;
         return new EmbedBuilder();
     }
 
     static EmbedBuilder withColor(int color) {
-        this._embed.color = color;
+        this.singleton.color = color;
+        return new EmbedBuilder();
+    }
+
+    static EmbedBuilder withField(string name, string value) {
+        this.singleton.fields ~= EmbedField(name, value, false);
+        return new EmbedBuilder();
+    }
+
+    static EmbedBuilder withInlineField(string name, string value) {
+        this.singleton.fields ~= EmbedField(name, value, true);
         return new EmbedBuilder();
     }
 
     static Embed buildEmbed() {
-        return this._embed;
+        return this.singleton;
     }
 }
