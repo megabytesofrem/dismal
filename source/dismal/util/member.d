@@ -21,17 +21,13 @@ GuildMember findMemberNamed(DiscordHTTPClient client, string guildId, string mem
  * Helper method to get a role by its name, from a specific guild (by its id)
  * Returns: 
  */
-Nullable!Role getMemberRole(DiscordHTTPClient client, string guildId, GuildMember member, string roleName) {
-    import std.algorithm.searching : find;
-    import std.range : front;
+Role[] getMemberRoles(DiscordHTTPClient client, string guildId, GuildMember member) {
+    import std.array;
 
     Role[] roles = client.guild.getGuildRoles(guildId);
 
-    Role role = roles.find!((r) => r.name == roleName).front;
-    if (hasRole(member, role))
-        return Nullable!Role(role);
-
-    return Nullable!Role.init;
+    auto memberRoles = roles.filter!((r) => hasRole(member, r)).array;
+    return memberRoles;
 }
 
 /** 

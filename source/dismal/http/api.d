@@ -39,14 +39,14 @@ public:
     /// sendMessage but with embed support
     void sendMessage(string channelId, Embed embed, bool isTts) {
         // not sure how i feel about this?
-        struct CreateMessageParams {
+        struct Params {
             string content;
             Embed embed;
             bool tts;
         }
 
-        auto params = CreateMessageParams("", embed, isTts);
-        auto json = serializeToJson!CreateMessageParams(params);
+        auto params = Params("", embed, isTts);
+        auto json = serializeToJson!Params(params);
 
         requestDiscordNull(HTTPMethod.POST, "/channels/"~channelId~"/messages", "json", this._token, (scope req) {
             req.writeJsonBody(json);
@@ -55,7 +55,7 @@ public:
 
     /// GET
     Channel getChannel(string channelId) {
-        return requestDiscordAs!Channel(HTTPMethod.GET, "/channels"~channelId, "json", this._token);
+        return requestDiscordAs!Channel(HTTPMethod.GET, "/channels/"~channelId, "json", this._token);
     }
 
     Message getMessage(string channelId, string messageId) {
@@ -79,6 +79,32 @@ public:
 
     this(string token) {
         this._token = token;
+    }
+
+    void kickMember(string guildId, string userId) {
+        requestDiscordNull(HTTPMethod.DELETE, "/guilds/"~guildId~"/members/"~userId, "json", this._token, (scope req) {
+            //req.writeJsonBody(json);
+        });
+    }
+
+    void banMember(string guildId, string userId, string reason = "", int deleteMessageDays = 0) {
+        struct Params {
+            int delete_message_days;
+            string reason;
+        }
+
+        auto params = Params(deleteMessageDays, reason);
+        auto json = serializeToJson!Params(params);
+
+        requestDiscordNull(HTTPMethod.PUT, "/guilds/"~guildId~"/bans/"~userId, "json", this._token, (scope req) {
+            req.writeJsonBody(json);
+        });
+    }
+
+    void unbanMember(string guildId, string userId) {
+        requestDiscordNull(HTTPMethod.DELETE, "/guilds/"~guildId~"/bans/"~userId, "json", this._token, (scope req) {
+            //req.writeJsonBody(json);
+        });
     }
 
     /// GET

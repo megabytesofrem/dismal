@@ -1,6 +1,7 @@
 module dismal.command;
 
 import dismal.client : Client;
+import dismal.core.permission;
 import dismal.models;
 
 import dismal.logging.logger;
@@ -11,9 +12,9 @@ import dismal.logging.logger;
 struct Command
 {
     // @Command("help", "displays help for the bot", ["READ_MESSAGES"], false)
-    string name;
+    string[] aliases;
     string description;
-    string[] permissions;
+    int[] permissions;
     bool ownerOnly;
 }
 
@@ -67,13 +68,38 @@ public:
         import dismal.logging.logger;
         import std.string : split;
 
+        import dismal.util.member;
+
         // Parse the command into its individual parts
         auto commandName = msg.content.split(" ")[0][this.prefix.length .. $];
         auto rest = msg.content.split(" ")[1 .. $];
 
+        PermissionFlag totalPermissions;
+        auto member = client.http.guild.getGuildMember(msg.guild_id, msg.author.id);
+        auto memberRoles = getMemberRoles(client.http, msg.guild_id, member);
+
         foreach (command; commands) {
-            if (command.command.name == commandName) {
-                command.handlerFn(client, msg, commandName, rest);
+            // TODO: clean this up wtf
+            foreach (alias_; command.command.aliases) {
+                if (alias_ == commandName) {
+                    // Check if we have permissions to run the command
+                    if (command.command.permissions.length == 0) {
+                        command.handlerFn(client, msg, commandName, rest);
+                        break;
+                    }
+
+                    // Set all the permission flags
+                    foreach (pf; command.command.permissions) {
+                        setPermission(totalPermissions, cast(PermissionFlag) pf);
+                    }
+
+                    foreach (role; memberRoles) {
+                        if (checkPermission(cast(PermissionFlag) role.permissions, totalPermissions)) {
+                            command.handlerFn(client, msg, commandName, rest);
+                            break;
+                        }
+                    }
+                }
             }
         }
     }

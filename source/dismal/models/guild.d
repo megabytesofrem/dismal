@@ -12,12 +12,12 @@ import dismal.models.emoji;
 struct GuildMember
 {
     @optional PartialUser user;
-    Nullable!string nick;
-    string[] roles; // should be snowflake array
-    string joined_at;
+    @optional Nullable!string nick;
+    @optional string[] roles; // should be snowflake array
+    @optional string joined_at;
     @optional Nullable!string premium_since;
-    bool deaf;
-    bool mute;
+    @optional bool deaf;
+    @optional bool mute;
 }
 
 struct Guild
