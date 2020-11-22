@@ -12,6 +12,8 @@ import vibe.inet.message;
 import vibe.http.client;
 import vibe.data.json;
 
+import dismal.http.api;
+import dismal.http.auth;
 import dismal.logging.logger;
 
 HTTPClientResponse requestDiscord(HTTPMethod method, string route, scope void delegate(scope HTTPClientRequest req) @safe requester = null) {
@@ -29,15 +31,15 @@ HTTPClientResponse requestDiscord(HTTPMethod method, string route, scope void de
 void requestDiscordNull(HTTPMethod method, 
                       string route, 
                       string type = "json",
-                      string auth = "",
+                      AuthProvider auth = AuthProvider.none,
                       scope void delegate(scope HTTPClientRequest req) @safe requester = null) {
     auto res = requestDiscord(method, route, (scope req) {
         if (type == "json")
             req.headers.addField("Content-Type", "application/json");
 
         // Add an Authorization field if needed
-        if (auth != "")
-            req.headers.addField("Authorization", "Bot " ~ auth);
+        if (auth.getType == AuthType.secret)
+            req.headers.addField("Authorization", "Bot " ~ auth.getUnderlyingToken);
 
         if (requester !is null)
             requester(req);
@@ -47,15 +49,15 @@ void requestDiscordNull(HTTPMethod method,
 T requestDiscordAs(T)(HTTPMethod method, 
                       string route, 
                       string type = "json",
-                      string auth = "",
+                      AuthProvider auth = AuthProvider.none,
                       scope void delegate(scope HTTPClientRequest req) @safe requester = null) {
     auto res = requestDiscord(method, route, (scope req) {
         if (type == "json")
             req.headers.addField("Content-Type", "application/json");
 
         // Add an Authorization field if needed
-        if (auth != "")
-            req.headers.addField("Authorization", "Bot " ~ auth);
+        if (auth.getType == AuthType.secret)
+            req.headers.addField("Authorization", "Bot " ~ auth.getUnderlyingToken);
 
         if (requester !is null)
             requester(req);
@@ -71,6 +73,7 @@ class DiscordHTTPClient
 {
     import dismal.models;
     import dismal.http.api;
+    import dismal.http.auth;
     import dismal.core.gateway : HTTPGatewayResponse;
 
 private:
@@ -86,7 +89,7 @@ public:
     this(string token) {
         this._token = token;
 
-        this.channel = new ChannelAPI(token);
-        this.guild = new GuildAPI(token);
+        this.channel = new ChannelAPI(AuthProvider.secretToken(this._token));
+        this.guild = new GuildAPI(AuthProvider.secretToken(this._token));
     }
 }

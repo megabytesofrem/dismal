@@ -9,6 +9,7 @@ import dismal.models.role;
 import dismal.models.emoji;
 
 /** https://discord.com/developers/docs/resources/guild */
+
 struct GuildMember
 {
     @optional PartialUser user;

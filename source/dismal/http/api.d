@@ -9,6 +9,7 @@ import vibe.http.client;
 import vibe.data.json;
 
 import dismal.http.client;
+import dismal.http.auth;
 
 /**
  * Abstraction over the Discord /channels/ endpoint
@@ -18,10 +19,10 @@ class ChannelAPI
     import dismal.models;
 
 public:
-    string _token;
+    AuthProvider auth;
 
-    this(string token) {
-        this._token = token;
+    this(AuthProvider auth) {
+        this.auth = auth;
     }
 
     /// POST
@@ -31,7 +32,7 @@ public:
         message.content = content;
 
         auto json = serializeToJson!Message(message);
-        requestDiscordNull(HTTPMethod.POST, "/channels/"~channelId~"/messages", "json", this._token, (scope req) {
+        requestDiscordNull(HTTPMethod.POST, "/channels/"~channelId~"/messages", "json", auth, (scope req) {
             req.writeJsonBody(json);
         });
     }
@@ -48,22 +49,22 @@ public:
         auto params = Params("", embed, isTts);
         auto json = serializeToJson!Params(params);
 
-        requestDiscordNull(HTTPMethod.POST, "/channels/"~channelId~"/messages", "json", this._token, (scope req) {
+        requestDiscordNull(HTTPMethod.POST, "/channels/"~channelId~"/messages", "json", auth, (scope req) {
             req.writeJsonBody(json);
         });
     }
 
     /// GET
     Channel getChannel(string channelId) {
-        return requestDiscordAs!Channel(HTTPMethod.GET, "/channels/"~channelId, "json", this._token);
+        return requestDiscordAs!Channel(HTTPMethod.GET, "/channels/"~channelId, "json", auth);
     }
 
     Message getMessage(string channelId, string messageId) {
-        return requestDiscordAs!Message(HTTPMethod.GET, "/channels/"~channelId~"/messages/"~messageId, "json", this._token);
+        return requestDiscordAs!Message(HTTPMethod.GET, "/channels/"~channelId~"/messages/"~messageId, "json", auth);
     }
 
     Message[] getMessages(string channelId, int limit = 50) {
-        return requestDiscordAs!(Message[])(HTTPMethod.GET, "/channels/"~channelId~"/messages", "json", this._token);
+        return requestDiscordAs!(Message[])(HTTPMethod.GET, "/channels/"~channelId~"/messages", "json", auth);
     }
 }
 
@@ -75,14 +76,14 @@ class GuildAPI
     import dismal.models;
 
 public:
-    string _token;
+    AuthProvider auth;
 
-    this(string token) {
-        this._token = token;
+    this(AuthProvider auth) {
+        this.auth = auth;
     }
 
     void kickMember(string guildId, string userId) {
-        requestDiscordNull(HTTPMethod.DELETE, "/guilds/"~guildId~"/members/"~userId, "json", this._token, (scope req) {
+        requestDiscordNull(HTTPMethod.DELETE, "/guilds/"~guildId~"/members/"~userId, "json", auth, (scope req) {
             //req.writeJsonBody(json);
         });
     }
@@ -96,24 +97,24 @@ public:
         auto params = Params(deleteMessageDays, reason);
         auto json = serializeToJson!Params(params);
 
-        requestDiscordNull(HTTPMethod.PUT, "/guilds/"~guildId~"/bans/"~userId, "json", this._token, (scope req) {
+        requestDiscordNull(HTTPMethod.PUT, "/guilds/"~guildId~"/bans/"~userId, "json", auth, (scope req) {
             req.writeJsonBody(json);
         });
     }
 
     void unbanMember(string guildId, string userId) {
-        requestDiscordNull(HTTPMethod.DELETE, "/guilds/"~guildId~"/bans/"~userId, "json", this._token, (scope req) {
+        requestDiscordNull(HTTPMethod.DELETE, "/guilds/"~guildId~"/bans/"~userId, "json", auth, (scope req) {
             //req.writeJsonBody(json);
         });
     }
 
     /// GET
     Guild getGuild(string guildId) {
-        return requestDiscordAs!Guild(HTTPMethod.GET, "/guilds/"~guildId, "json", this._token);
+        return requestDiscordAs!Guild(HTTPMethod.GET, "/guilds/"~guildId, "json", auth);
     }
 
     Channel[] getGuildChannels(string guildId) {
-        return requestDiscordAs!(Channel[])(HTTPMethod.GET, "/guilds/"~guildId~"/channels", "json", this._token);
+        return requestDiscordAs!(Channel[])(HTTPMethod.GET, "/guilds/"~guildId~"/channels", "json", auth);
     }
 
     Channel getGuildChannel(string guildId, string channelId) {
@@ -123,15 +124,15 @@ public:
     }
 
     GuildMember[] getGuildMembers(string guildId) {
-        return requestDiscordAs!(GuildMember[])(HTTPMethod.GET, "/guilds/"~guildId~"/members", "json", this._token);
+        return requestDiscordAs!(GuildMember[])(HTTPMethod.GET, "/guilds/"~guildId~"/members", "json", auth);
     }
 
     GuildMember getGuildMember(string guildId, string userId) {
-        return requestDiscordAs!GuildMember(HTTPMethod.GET, "/guilds/"~guildId~"/members/"~userId, "json", this._token);
+        return requestDiscordAs!GuildMember(HTTPMethod.GET, "/guilds/"~guildId~"/members/"~userId, "json", auth);
     }
 
     Role[] getGuildRoles(string guildId) {
-        return requestDiscordAs!(Role[])(HTTPMethod.GET, "/guilds/"~guildId~"/roles", "json", this._token);
+        return requestDiscordAs!(Role[])(HTTPMethod.GET, "/guilds/"~guildId~"/roles", "json", auth);
     }
 
     Nullable!Role getGuildRole(string guildId, string roleId) {
